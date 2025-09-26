@@ -3,6 +3,8 @@ import { LayoutDashboard, PlusCircle, History, Settings, LogOut, ChevronDown, Ch
 import { NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import profile from "../../assets/images/profile.jpg";
+import { useAuth } from "@/context/AuthContext";
+
 
 export default function Sidebar({ isOpen }) {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -13,10 +15,13 @@ export default function Sidebar({ isOpen }) {
     { label: "Add Transaction", icon: PlusCircle, id: "add" },
     { label: "Transactions", icon: History, id: "transactions", path: "/transactions" },
     { label: "Settings", icon: Settings, id: "settings", path: "/settings" },
-    { label: "Logout", icon: LogOut, id: "logout", path: "/logout" },
+    { label: "Logout", icon: LogOut, id: "logout", path: "/auth/logout" },
+
   ];
 
   const isDropdownChildActive = ["/add-income", "/add-expense"].includes(location.pathname);
+
+  const {user} = useAuth();
 
   return (
     <aside className={`h-screen w-80 bg-white dark:bg-gray-900 shadow-md flex flex-col justify-between fixed top-0 left-0 z-40 transform transition-transform duration-300 md:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
@@ -28,7 +33,9 @@ export default function Sidebar({ isOpen }) {
             className="w-32 h-32 rounded-full object-cover border border-gray-300 dark:border-gray-700"
           />
           <div className="pt-2">
-            <p className="text-3xl font-semibold text-gray-800 dark:text-white">Chiemena Godswill</p>
+            {user && (
+              <p className="text-3xl font-semibold text-gray-800 dark:text-white">{user.displayName}</p>
+            )}
           </div>
         </div>
 

@@ -1,6 +1,9 @@
+import { useAuth } from "@/context/AuthContext";
 import { Bell, UserCircle, Search  } from "lucide-react";
 
 function Navbar() {
+  const { user } = useAuth();
+
   return (
     <header className="w-full bg-white dark:bg-gray-900 shadow-md py-3 px-6 flex items-center justify-between sticky top-0 z-40 md:py-7">
      {/* Left: Search Bar */}
@@ -22,6 +25,14 @@ function Navbar() {
         <div className="flex items-center gap-2">
           <UserCircle className="w-9 h-9 text-gray-600 dark:text-gray-300" />
           <span className="text-gray-800 dark:text-white text-2xl ">Chiemena</span>
+
+          {user && (
+
+            <span className="text-gray-800 dark:text-white text-2xl ">
+              {user.displayName}
+            </span>
+          )}
+
         </div>
       </div>
     </header>

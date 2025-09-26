@@ -1,23 +1,58 @@
 import { Lock, EyeOff, Eye, Mail, User } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { googleLogin, login } from "@/services/authService";
+import toast from "react-hot-toast";
+
 
 const Login = () => {
 
     const [formData, setFormData] = useState({
+
         name: "",
         email: "",
         password: ""
     });
 
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+
     const handleChange = (e) => {
         setFormData({...formData, [e.target.name]: e.target.value})
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        setLoading(true);
+
+        try{
+            await login(formData.email, formData.password);
+            setLoading(false);
+            toast.success("Logged In!");
+
+            setTimeout(() => {
+                navigate("/");
+            }, 1500);
+        }catch(error) {
+            setLoading(false);
+            toast.error(error.message);
+        }
     }
 
-    const handleSubmit = (e) => {
-        e.prevent();
-        console.log("Register form date:", formData);
+    const handleGoogleIn = async () => {
+        setLoading(true);
+        try{
+            await googleLogin();
+            toast.success("Log in Successfull!");
+            navigate("/");
+        }catch(error) {
+            toast.error(error.message);
+        } finally{
+            setLoading(false);
+        }
+
     }
 
     const [showPassword, setShowPassword] = useState(false);
@@ -33,7 +68,8 @@ const Login = () => {
                 <Mail className="absolute left-3 top-6 -translate-y-1/2 text-gray-400" size={20} />
                 <input 
                     type="email" 
-                    name="name"
+                    name="email"
+                    onChange={handleChange}
                     placeholder="Enter Email"
                     className="w-full pl-10 p-3 mb-4 border rounded-lg bg-gray-200" 
                 />
@@ -44,6 +80,7 @@ const Login = () => {
                 <input 
                     type={showPassword ? "text" : "password"} 
                     name="password"
+                    onChange={handleChange}
                     placeholder="Enter Password"
                     className="w-full pl-10 p-3 mb-4 border rounded-lg bg-gray-200" 
                 />
@@ -76,11 +113,20 @@ const Login = () => {
 
             <button 
                 type="submit"
-                onClick={handleSubmit}
-                className="w-full py-3 mt-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                disabled={loading}
+                className={`w-full py-3 mt-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition cursor-pointer ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600"}`}
             >
-                Log in
+                {loading ? "Logging In..." : "Log in"}
             </button>
+
+            <div className="flex justify-center space-x-4 mt-4">
+                <div className="bg-white rounded-xl shadow-md p-4">
+                    <button onClick={handleGoogleIn} className="cursor-pointer">
+                        <FcGoogle size={35} />
+                    </button>
+                </div>
+            </div>
+
 
         </form>
     );
